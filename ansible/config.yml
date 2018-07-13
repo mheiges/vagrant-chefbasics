@@ -1,13 +1,15 @@
 
+vagrant_shared_dir: /vagrant/scratch
 
 chef_server_version: 12.17.33
+chef_server_recreate_existing_users: no
 chef_server_admin_username: admin
 chef_server_admin_firstname: Admin
 chef_server_admin_lastname: User
 # root@localhost.localdomain is taken by built-in pivotal user, use different
 chef_server_admin_email: vagrant@localhost.localdomain
 chef_server_admin_password: vagrant
-chef_server_admin_private_key: /vagrant/chef_admin.pem
+chef_server_admin_private_key: chef_admin.pem
 chef_server_organization_name: IBM Cloud Services
 chef_server_organization_shortname: ibmcloud
-chef_server_validator_private_key: /home/vagrant/ibm-chef-validator.pem
+chef_server_validator_private_key: ibm-chef-validator.pem
