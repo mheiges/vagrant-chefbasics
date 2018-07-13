@@ -1,0 +1,6 @@
+.vagrant
+.DS_Store
+sshconfig
+chef
+chef-repo
+*.retry

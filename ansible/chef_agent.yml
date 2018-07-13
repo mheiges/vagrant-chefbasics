@@ -1,0 +1,17 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: no
+  remote_user: vagrant
+
+  tasks:
+
+    - name: download chef install script
+      get_url:
+        url: https://omnitruck.chef.io/install.sh
+        dest: /home/vagrant/chef_install.sh
+        mode: 0755
+
+    - name: install chef
+      command: /home/vagrant/chef_install.sh -P chefdk -c stable -v 2.5.3
+      become: yes
