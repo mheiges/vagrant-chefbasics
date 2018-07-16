@@ -1,7 +1,7 @@
 
 Vagrant box for Chef tutorials, experimentation.
 
-https://learn.chef.io/modules/learn-the-basics/rhel#/
+https://learn.chef.io/modules#/
 
 # Setup
 
@@ -56,3 +56,24 @@ cd ~/learn-chef
 
 Chef server is installed to the `server` node by Ansible following
 https://learn.chef.io/modules/manage-a-node-chef-server/rhel/bring-your-own-system/set-up-your-chef-server#/
+
+
+## Bootstrap Chef `node`
+
+On Chef workstation (OS X), run
+
+````
+knife bootstrap node.chef.vm \
+  --ssh-user vagrant \
+  --sudo \
+  --ssh-identity-file ~/Vagrant/vagrant-chefbasics/.vagrant/machines/node/virtualbox/private_key \
+  --node-name node1-centos --run-list 'recipe[learn_chef_httpd]'
+````
+
+# Update Chef `node`
+
+knife ssh node.chef.vm \
+  'sudo chef-client' \
+  --ssh-user vagrant \
+  --ssh-identity-file ~/Vagrant/vagrant-chefbasics/.vagrant/machines/node/virtualbox/private_key \
+  --manual-list

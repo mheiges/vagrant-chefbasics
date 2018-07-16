@@ -14,12 +14,8 @@
       include_vars:
         file: config.yml
 
-    - name: disable yum fastestmirror
-      lineinfile:
-        path: /etc/yum/pluginconf.d/fastestmirror.conf
-        regexp: '^enabled\s*=\s*'
-        line: 'enabled=0'
-      become: yes
+    - name: Run common tasks
+      include_tasks: chef_common.yml
 
     - name: download chef-server-core RPM
       get_url:

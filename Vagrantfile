@@ -11,7 +11,7 @@ CHEF_NODES = {
   :node => {
     :vagrant_box     => BOX,
     :wf_hostname     => 'node.' + TLD,
-    :playbook        => 'ansible/chef_agent.yml'
+    :playbook        => 'ansible/chef_node.yml'
   },
 }
 

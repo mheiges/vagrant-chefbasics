@@ -1,0 +1,6 @@
+- name: disable yum fastestmirror
+  lineinfile:
+    path: /etc/yum/pluginconf.d/fastestmirror.conf
+    regexp: '^enabled\s*=\s*'
+    line: 'enabled=0'
+  become: yes
