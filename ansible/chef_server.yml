@@ -14,8 +14,9 @@
       include_vars:
         file: config.yml
 
-    - name: Run common tasks
-      include_tasks: chef_common.yml
+    - name: Run RHEL common tasks
+      include_tasks: chef_centos_common.yml
+      when: ansible_os_family is 'RedHat'
 
     - name: download chef-server-core RPM
       get_url:

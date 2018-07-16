@@ -1,15 +1,19 @@
-BOX = 'bento/centos-7'
 TLD = 'chef.vm'
 
 
 CHEF_NODES = {
   :server => {
-    :vagrant_box     => BOX,
+    :vagrant_box     => 'bento/centos-7',
     :wf_hostname     => 'server.' + TLD,
     :playbook        => 'ansible/chef_server.yml'
   },
-  :node => {
-    :vagrant_box     => BOX,
+  :node_centos => {
+    :vagrant_box     => 'bento/centos-7',
+    :wf_hostname     => 'node.' + TLD,
+    :playbook        => 'ansible/chef_node.yml'
+  },
+  :node_ubuntu => {
+    :vagrant_box     => 'bento/ubuntu-14.04',
     :wf_hostname     => 'node.' + TLD,
     :playbook        => 'ansible/chef_node.yml'
   },

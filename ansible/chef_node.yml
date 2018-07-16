@@ -1,13 +1,14 @@
 ---
 - hosts: all
   become: yes
-  gather_facts: no
+  gather_facts: yes
   remote_user: vagrant
 
   tasks:
 
-    - name: Run common tasks
-      include_tasks: chef_common.yml
+    - name: Run RHEL common tasks
+      include_tasks: chef_centos_common.yml
+      when: ansible_os_family == 'RedHat'
 
 #     - name: download chef install script
 #       get_url:

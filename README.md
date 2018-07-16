@@ -5,16 +5,24 @@ https://learn.chef.io/modules#/
 
 # Setup
 
-Chef server only
+Chef server only (CentOS)
 
 ```
 vagrant up server
 ```
 
-Node only
+This installs a standalone Chef server following https://docs.chef.io/install_server.html
+
+Node only (CentOS)
 
 ```
-vagrant up node
+vagrant up node_centos
+```
+
+Node only (Ubuntu)
+
+```
+vagrant up node_ubuntu
 ```
 
 Both server and node
@@ -44,10 +52,90 @@ ln ~/Vagrant/vagrant-chefbasics/scratch/chef_admin.pem ~/learn-chef/.chef/
 ln ~/Vagrant/vagrant-chefbasics/scratch/knife.rb ~/learn-chef/.chef/
 ````
 
+
+### Quick Start
+
+
 Work within the `~/learn-chef` directory (where the `.chef` dir is located)
 
 ```
 cd ~/learn-chef
+````
+
+````
+knife ssl fetch
+````
+
+```
+knife ssl check
+````
+
+
+````
+knife cookbook upload learn_chef_httpd
+knife cookbook list
+````
+
+Bootstrap and run recipe
+
+````
+knife bootstrap node.chef.vm \
+  --ssh-user vagrant \
+  --sudo \
+  --identity-file ~/Vagrant/vagrant-chefbasics/.vagrant/machines/node_centos/virtualbox/private_key \
+  --node-name node_centos \
+  --run-list 'recipe[learn_chef_httpd]'
+````
+
+knife node list
+knife node show node_centos
+
+knife ssh node.chef.vm   'sudo chef-client'   --ssh-user vagrant   --ssh-identity-file ~/Vagrant/vagrant-chefbasics/.vagrant/machines/node_centos/virtualbox/private_key   --manual-list
+
+
+Install from Berksfile specs,
+
+````
+berks install
+````
+
+````
+berks upload --no-ssl-verify
+````
+
+
+knife role from file roles/web.json
+
+knife role list
+
+knife role show web
+
+knife node run_list set node_centos "role[web]"
+
+knife node show node_centos --run-list
+
+knife ssh 'role:web'   'sudo chef-client'   --ssh-user vagrant   --ssh-identity-file ~/Vagrant/vagrant-chefbasics/.vagrant/machines/node_centos/virtualbox/private_key
+
+knife status 'role:web' --run-list
+
+Delete a node
+
+```
+knife node delete node1 --yes
+knife client delete node1 --yes
+```
+
+
+Delete a cookbook (all versions) from server
+
+````
+knife cookbook delete learn_chef_httpd --all --yes
+````
+
+Delete a role from server
+
+````
+knife role delete web --yes
 ````
 
 ## `server`
@@ -67,7 +155,7 @@ knife bootstrap node.chef.vm \
   --ssh-user vagrant \
   --sudo \
   --ssh-identity-file ~/Vagrant/vagrant-chefbasics/.vagrant/machines/node/virtualbox/private_key \
-  --node-name node1-centos --run-list 'recipe[learn_chef_httpd]'
+  --node-name node1 --run-list 'recipe[learn_chef_httpd]'
 ````
 
 # Update Chef `node`
