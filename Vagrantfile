@@ -9,12 +9,12 @@ CHEF_NODES = {
   },
   :node_centos => {
     :vagrant_box     => 'bento/centos-7',
-    :wf_hostname     => 'node.' + TLD,
+    :wf_hostname     => 'node-centos.' + TLD,
     :playbook        => 'ansible/chef_node.yml'
   },
   :node_ubuntu => {
     :vagrant_box     => 'bento/ubuntu-14.04',
-    :wf_hostname     => 'node.' + TLD,
+    :wf_hostname     => 'node-ubuntu.' + TLD,
     :playbook        => 'ansible/chef_node.yml'
   },
 }

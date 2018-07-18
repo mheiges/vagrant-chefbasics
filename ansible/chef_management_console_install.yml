@@ -1,0 +1,26 @@
+
+# - name: check if chef-manage is installed
+#   command: rpm -q --quiet chef-manage
+#   register: has_chef_manage
+#   failed_when: false
+#   change_when: false
+
+- name: install chef-manage
+  command: chef-server-ctl install chef-manage --accept-license
+  register: installed_chef_manage
+  args:
+    creates: /opt/chef-manage
+#  when: has_chef_manage.rc != 0
+
+- name: Run chef server reconfigure
+  include_tasks: chef_server_reconfigure.yml
+  when: installed_chef_manage.changed or chef_management_force_reconfigure
+
+- debug:
+    msg: Upcoming long-running chef management console reconfigure. Monitor at /tmp/chef-management-reconfig.log
+- name: chef-manage-ctl reconfigure
+  # unbuffer (from expect package) needed to prevent chef from
+  # clobbering stdout due to redirection
+  shell: unbuffer chef-manage-ctl reconfigure  --accept-license > /tmp/chef-management-reconfig.log
+  when: installed_chef_manage.changed or chef_management_force_reconfigure
+

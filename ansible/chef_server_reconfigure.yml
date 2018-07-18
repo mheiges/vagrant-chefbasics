@@ -1,0 +1,6 @@
+- debug:
+    msg: Upcoming long-running chef-server reconfigure. Monitor at /tmp/chef-server-reconfig.log
+- name: chef-server-ctl reconfigure
+  # unbuffer (from expect package) needed to prevent chef from
+  # clobbering stdout due to redirection
+  shell: unbuffer chef-server-ctl reconfigure > /tmp/chef-server-reconfig.log

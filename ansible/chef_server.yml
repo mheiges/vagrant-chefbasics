@@ -27,17 +27,41 @@
       yum:
         name: "/tmp/chef-server-core-{{ chef_server_version }}-1.el7.x86_64.rpm"
         state: present
+      register: installed_chef_server
 
     - name: install expect RPM for unbuffer command
       yum:
         name: expect
 
-    - debug:
-        msg: Upcoming long-running chef-server reconfigure. Monitor at /tmp/chef-server-reconfig.log
-    - name: chef-server-ctl reconfigure
-      # unbuffer (from expect package) needed to prevent chef from
-      # clobbering stdout due to redirection
-      shell: unbuffer chef-server-ctl reconfigure > /tmp/chef-server-reconfig.log
+    - name: install SSL self-signed cert
+      copy:
+        src: "files/ssl/{{ chef_server_ssl_cert }}"
+        dest: "/etc/pki/tls/certs/{{ chef_server_ssl_cert }}"
+        owner: root
+        mode: 0644
+      register: install_ssl_cert
+
+    - name: install SSL self-signed key
+      copy:
+        src: "files/ssl/{{ chef_server_ssl_key }}"
+        dest: "/etc/pki/tls/private/{{ chef_server_ssl_key }}"
+        owner: root
+        mode: 0600
+      register: install_ssl_key
+
+    - name: install chef-server.rb
+      template:
+        src: chef-server.rb.j2
+        dest: /etc/opscode/chef-server.rb
+      register: install_chef_server_rb
+
+    - name: chef server reconfigure task
+      include_tasks: chef_server_reconfigure.yml
+      when: chef_server_force_reconfigure or
+            installed_chef_server.changed or
+            install_ssl_cert.changed or
+            install_ssl_key.changed or
+            install_chef_server_rb.changed
 
     - name: lookup existing chef server users
       command: chef-server-ctl user-list
@@ -70,3 +94,7 @@
     - template:
         src: knife.rb.j2
         dest: /vagrant/scratch/knife.rb
+
+    - name: chef-manage task
+      include_tasks: chef_management_console_install.yml
+      when: chef_management_console_install
