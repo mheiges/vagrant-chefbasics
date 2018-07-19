@@ -1,9 +1,43 @@
+# vagrant-chefbasics
 
-Vagrant box for Chef tutorials, experimentation.
+Vagrant boxes for using with the [Learn Chef Rally](https://learn.chef.io/modules#/)
+and for other experimentation.
 
-https://learn.chef.io/modules#/
+The project includes a Chef Server node, a CentOS node and an Ubuntu node.
 
-# SSL Certificate
+# Requirements
+
+You'll need Vagrant, VirtualBox and the
+[landrush](https://github.com/vagrant-landrush/landrush) vagrant plugin
+installed on your workstation.
+
+# Setup
+
+The Vagrant provisioning is driven by Ansible and configurable in
+`ansible/config.yml`.
+
+**Account/Passwords**
+
+- root/vagrant
+- vagrant/vagrant
+
+
+### Boot Chef server only
+
+```
+vagrant up server
+```
+
+Hostname: server.chef.vm
+
+This installs a standalone Chef server on CentOS following
+https://docs.chef.io/install_server.html
+
+Optionally, the Chef Management Console will be installed if
+`chef_management_console_install` is true in `ansible/config.yml`. The
+management console will be at
+[https://server.chef.vm/](https://server.chef.vm) with username/password
+`admin`/`vagrant`. See `ansible/config.yml` for current settings.
 
 A self-signed certificate and key are installed from `ansible/files/ssl`
 so a consistent cert is presented to web browsers for exclusion (for
@@ -11,7 +45,7 @@ Management Console access). This is especially useful with Safari which
 caches excluded certs and will refuse access to the Console if the
 excluded cert has changed (i.e. the VM is recreated).
 
-The cert was generated with,
+For the record, the cert was generated with,
 
 ````
 openssl req -x509 -newkey rsa:4096 \
@@ -20,54 +54,40 @@ openssl req -x509 -newkey rsa:4096 \
   -days 3650 -nodes -subj '/CN=server.chef.vm'
 ````
 
-# Setup
 
-### Chef server only (CentOS)
-
-```
-vagrant up server
-```
-
-This installs a standalone Chef server following https://docs.chef.io/install_server.html
-
-The management console is at https://server.chef.vm with
-username/password `admin`/`vagrant`. See `ansible/config.yml` for
-current settings, including `chef_management_console_install` to disable
-installing the console.
-
-
-### Node only (CentOS)
+### CentOS client node only
 
 ```
 vagrant up node_centos
 ```
 
-### Node only (Ubuntu)
+Hostname: node-centos.chef.vm
+
+### Ubuntu client node only
 
 ```
 vagrant up node_ubuntu
 ```
 
-### Both server and node
+Hostname: node-ubuntu.chef.vm
+
+### All server and client nodes
 
 ```
 vagrant up
 ```
 
-## `workstation`
+## Your workstation setup
 
-For Mac OS X, download, install package from https://downloads.chef.io/chefdk#mac_os_x
+For Mac OS X, download, install package from
+[https://downloads.chef.io/chefdk#mac_os_x](https://downloads.chef.io/chefdk#mac_os_x)
 
-Following https://learn.chef.io/modules/manage-a-node-chef-server/rhel/bring-your-own-system/set-up-your-chef-server#/
+Following the guidance of "**Configure your workstation**" at
+[https://learn.chef.io/modules/manage-a-node-chef-server/rhel/bring-your-own-system/set-up-your-chef-server#/](https://learn.chef.io/modules/manage-a-node-chef-server/rhel/bring-your-own-system/set-up-your-chef-server#/)
+with the following variance regarding the RSA private key and `knife.rb`.
 
-The Vagrant `server` node provisioning created a private key and a
-`knife.rb` file that you can copy into your `.chef` directory as (or use
-symlinks as shown). The `knife.rb` file should be set with correct
-values based on the Ansible `ansible/config.yml` used during the vagrant
-provision, but review it to be sure. The `pem` file will be recreated if
-`chef_server_recreate_existing_users` is true in `ansible/config.yml`
-during a vagrant re-provision, so you will need to update the file in
-the `.chef` directory and again run `knife ssl fetch`.
+After provisioning the Chef server node, set up your RSA private key and
+`knife.rb` as follows.
 
 ````
 mkdir -p ~/learn-chef/.chef
@@ -75,6 +95,16 @@ ln ~/Vagrant/vagrant-chefbasics/scratch/chef_admin.pem ~/learn-chef/.chef/
 ln ~/Vagrant/vagrant-chefbasics/scratch/knife.rb ~/learn-chef/.chef/
 ````
 
+The Vagrant `server` node provisioning created a private key and a
+`knife.rb` file that you can copy into your `.chef` directory as (or use
+symlinks as shown above). The `knife.rb` file should already be set with
+correct values based on the Ansible `ansible/config.yml` used during the
+vagrant provision, but review it to be sure. The `pem` file will be
+recreated each time you create the server. It will als be recreated each
+time you run `vagrant provision` while
+`chef_server_recreate_existing_users` is true in `ansible/config.yml`,
+so you will need to update the file in the `.chef` directory and again
+run `knife ssl fetch`.
 
 ### Quick Start
 
@@ -84,23 +114,6 @@ Work within the `~/learn-chef` directory (where the `.chef` dir is located)
 ```
 cd ~/learn-chef
 ````
-
-
-The Vagrant `server` node provisioning created a private key and a
-`knife.rb` file that you can copy into your `.chef` directory as (or use
-symlinks as shown). The `knife.rb` file should be set with correct
-values based on the Ansible `ansible/config.yml` used during the vagrant
-provision, but review it to be sure. The `pem` file will be recreated if
-`chef_server_recreate_existing_users` is true in `ansible/config.yml`
-during a vagrant re-provision, so you will need to update the file in
-the `.chef` directory and again run `knife ssl fetch`.
-
-````
-mkdir -p ~/learn-chef/.chef
-ln -nfs ~/Vagrant/vagrant-chefbasics/scratch/chef_admin.pem ~/learn-chef/.chef/
-ln -nfs ~/Vagrant/vagrant-chefbasics/scratch/knife.rb ~/learn-chef/.chef/
-````
-
 
 ````
 knife ssl fetch
